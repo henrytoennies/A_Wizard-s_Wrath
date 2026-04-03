@@ -7,6 +7,7 @@ public class Projectile : MonoBehaviour
     [Header("Set Dynamically")]
     public float damage = 1;
     public Rigidbody rigid;
+    public Renderer render;
 
     private BoundsCheck bndCheck;
     
@@ -17,6 +18,7 @@ public class Projectile : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody>();
         bndCheck = GetComponent<BoundsCheck>();
+        render = GetComponent<Renderer>();
     }
 
     // Update is called once per frame

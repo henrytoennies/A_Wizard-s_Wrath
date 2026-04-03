@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 1289280466832246506}
   - component: {fileID: 7030890091766894857}
   - component: {fileID: 5306863248546243524}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FireBullet
-  m_TagString: Untagged
+  m_TagString: WizardProjectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -114,6 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   rigid: {fileID: 0}
+  render: {fileID: 0}
 --- !u!114 &7030890091766894857
 MonoBehaviour:
   m_ObjectHideFlags: 0

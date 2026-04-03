@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 6514880139180323605}
   - component: {fileID: 4555640506441269802}
   - component: {fileID: 898310394816993756}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: GrassBullet
-  m_TagString: Untagged
+  m_TagString: WizardProjectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 244090488605934293}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 7.618, y: -0.005, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.25, z: 0.2}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -115,6 +115,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   rigid: {fileID: 0}
+  render: {fileID: 0}
 --- !u!114 &4555640506441269802
 MonoBehaviour:
   m_ObjectHideFlags: 0

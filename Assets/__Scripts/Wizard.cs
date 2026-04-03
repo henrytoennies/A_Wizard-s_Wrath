@@ -1,4 +1,5 @@
 using Unity.VisualScripting;
+using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 
 public class Wizard : MonoBehaviour
@@ -8,11 +9,17 @@ public class Wizard : MonoBehaviour
     [Header("Set In Inspector")]
     public float speed = 10f;
     public float speedFocus = 5f;
+    public float health = 10f;
+    public Color color;
+    public float invincibilityTime;
 
     [Header("Set Dynamically")] [SerializeField]
     private elemType type = elemType.water;
     public elemDef def;
     public float lastShotTime;
+    public Renderer render;
+    public bool showingDamage;
+    public float lastTakenDamage;
 
 
     void Awake()
@@ -24,6 +31,8 @@ public class Wizard : MonoBehaviour
         {
             Debug.LogError("Wizard.Awake Attempted to assign second Wizard.S");
         }
+
+        render = GetComponent<Renderer>();
     }
 
     void Start()
@@ -36,19 +45,33 @@ public class Wizard : MonoBehaviour
     {
         float xAxis = Input.GetAxis("Horizontal");
         float yAxis = Input.GetAxis("Vertical");
-        float slow = Input.GetAxis("Fire1") + 1;
+        float slow = Input.GetAxis("Jump") + 1;
 
         Vector3 pos = transform.position;
         pos.x += speed * xAxis * Time.deltaTime / slow;
         pos.y += speed * yAxis * Time.deltaTime / slow;
         transform.position = pos;
+
+        if (showingDamage && (Time.time - lastTakenDamage) > invincibilityTime)
+        {
+            DoneDamageTaken();
+        }
+
+        if (Input.GetAxis("Fire1") == 1)
+        {
+            def = Main.GetElemDef(elemType.water);
+        } else if (Input.GetAxis("Fire2") == 1)
+        {
+            def = Main.GetElemDef(elemType.fire);
+        } else if (Input.GetAxis("Fire3") == 1)
+        {
+            def = Main.GetElemDef(elemType.grass);
+        }
     }
 
     void Shoot()
     {
         Projectile p;
-
-        print("shoot" + def.damage.ToString());
 
         switch (type)
         {
@@ -57,13 +80,32 @@ public class Wizard : MonoBehaviour
                 Invoke("Shoot", def.fireRate);
                 break;
             case elemType.fire:
-
+                p = MakeProjectile();
+                Invoke("Shoot", def.fireRate);
                 break;
             case elemType.grass:
-
+                p = MakeProjectile();
+                Invoke("Shoot", def.fireRate);
                 break;
             default:
 
+                break;
+        }
+    }
+
+    void OnTriggerEnter(Collider collision)
+    {
+        GameObject other = collision.gameObject;
+
+        switch (other.tag)
+        {
+            case "EnemyProjectile":
+                Projectile p = other.GetComponent<Projectile>();
+
+                DamageTaken(p.damage);
+                Destroy(other);
+                break;
+            default:
                 break;
         }
     }
@@ -77,17 +119,48 @@ public class Wizard : MonoBehaviour
             go.layer = LayerMask.NameToLayer("WizardProjectile");
         } else
         {
-            go.tag = "WizardProjectile";
-            go.layer = LayerMask.NameToLayer("ProjectileEnemy");
+            go.tag = "EnemyProjectile";
+            go.layer = LayerMask.NameToLayer("EnemyProjectile");
         }
 
         go.transform.position = transform.position + new Vector3(0.6f,0,0);
         Projectile p = go.GetComponent<Projectile>();
         p.damage = def.damage;
+        p.render.material.color = def.projectileColor;
 
         Vector3 vel = Vector3.right * def.velocity;
         p.rigid.velocity = vel;
 
         return p;
+    }
+
+    public void DamageTaken(float dmg)
+    {
+        if (showingDamage)
+        {
+            return;
+        }
+        
+        health -= dmg;
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
+
+        showingDamage = true;
+        lastTakenDamage = Time.time;
+
+        Color tempColor = render.material.color;
+        tempColor.a = 0.5f;
+        render.material.color = tempColor;
+    }
+
+    public void DoneDamageTaken()
+    {
+        showingDamage = false;
+        Color tempColor = render.material.color;
+        tempColor.a = 1f;
+        render.material.color= tempColor;
     }
 }
