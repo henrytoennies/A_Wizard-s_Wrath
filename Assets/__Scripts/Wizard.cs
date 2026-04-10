@@ -1,5 +1,3 @@
-using Unity.VisualScripting;
-using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 
 public class Wizard : MonoBehaviour
@@ -14,7 +12,7 @@ public class Wizard : MonoBehaviour
     public float invincibilityTime;
 
     [Header("Set Dynamically")] [SerializeField]
-    private elemType type = elemType.water;
+    public elemType type = elemType.water;
     public elemDef def;
     public float lastShotTime;
     public Renderer render;
@@ -60,13 +58,22 @@ public class Wizard : MonoBehaviour
         if (Input.GetAxis("Fire1") == 1)
         {
             def = Main.GetElemDef(elemType.water);
+            type = elemType.water;
         } else if (Input.GetAxis("Fire2") == 1)
         {
             def = Main.GetElemDef(elemType.fire);
+            type = elemType.fire;
         } else if (Input.GetAxis("Fire3") == 1)
         {
             def = Main.GetElemDef(elemType.grass);
+            type = elemType.grass;
         }
+
+        if (showingDamage)
+        {
+            def.color.a = 0.5f;
+        }
+        render.material.color = def.color;
     }
 
     void Shoot()
@@ -97,14 +104,28 @@ public class Wizard : MonoBehaviour
     {
         GameObject other = collision.gameObject;
 
+        print("hit");
         switch (other.tag)
         {
             case "EnemyProjectile":
                 Projectile p = other.GetComponent<Projectile>();
 
                 DamageTaken(p.damage);
-                Destroy(other);
+                Destroy(other); 
                 break;
+
+            case "GrassBomb":
+                GrassBomb bomb = other.GetComponent<GrassBomb>();
+
+                DamageTaken(bomb.damage);
+                Destroy(other); 
+                break;
+
+            case "Enemy":
+                DamageTaken(2);
+                print("hit by boss");
+                break;
+
             default:
                 break;
         }
@@ -127,6 +148,7 @@ public class Wizard : MonoBehaviour
         Projectile p = go.GetComponent<Projectile>();
         p.damage = def.damage;
         p.render.material.color = def.projectileColor;
+        p.type = type;
 
         Vector3 vel = Vector3.right * def.velocity;
         p.rigid.velocity = vel;
@@ -143,24 +165,27 @@ public class Wizard : MonoBehaviour
         
         health -= dmg;
 
+        HealthBar.TakeDamage(dmg);
+
         if (health <= 0)
         {
             Destroy(gameObject);
+            Time.timeScale = 0;
         }
 
         showingDamage = true;
         lastTakenDamage = Time.time;
 
-        Color tempColor = render.material.color;
+        Color tempColor = def.color;
         tempColor.a = 0.5f;
-        render.material.color = tempColor;
+        def.color = tempColor;
     }
 
     public void DoneDamageTaken()
     {
         showingDamage = false;
-        Color tempColor = render.material.color;
+        Color tempColor = def.color;
         tempColor.a = 1f;
-        render.material.color= tempColor;
+        def.color= tempColor;
     }
 }

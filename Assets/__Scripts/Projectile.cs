@@ -8,6 +8,7 @@ public class Projectile : MonoBehaviour
     public float damage = 1;
     public Rigidbody rigid;
     public Renderer render;
+    public elemType type;
 
     private BoundsCheck bndCheck;
     

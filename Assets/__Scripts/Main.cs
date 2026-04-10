@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum elemType
 {
     water,
     grass,
-    fire,
-    waterUpgrade,
-    grassUpgrade,
-    fireUpgrade
+    fire
 }
 
 [System.Serializable]
@@ -33,6 +31,8 @@ public class Main : MonoBehaviour
 
     [Header("Set In Inspector")]
     public elemDef[] elemDefs;
+    public GameObject startButton;
+    public GameObject restartButton;
     
 
     void Awake()
@@ -44,6 +44,8 @@ public class Main : MonoBehaviour
         {
             ELEM_DICT[def.type] = def;
         }
+
+        Time.timeScale = 0;
     }
     // Start is called before the first frame update
     void Start()
